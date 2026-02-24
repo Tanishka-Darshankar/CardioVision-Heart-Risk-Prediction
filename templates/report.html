@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    body {
+        background: linear-gradient(135deg, #f8cdda 0%, #1d2b64 100%);
+        font-family: 'Poppins', sans-serif;
+        min-height: 100vh;
+    }
+
+    h1 {
+        font-family: 'Pacifico', cursive;
+        font-size: 3rem;
+        font-weight: 600;
+        color: #ff4081;
+    }
+
+    .card {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-custom {
+        background: linear-gradient(90deg, #ff4081, #ff6f61);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        padding: 10px 18px;
+        transition: 0.3s;
+    }
+
+    .btn-custom:hover {
+        background: linear-gradient(90deg, #ff6f61, #ff4081);
+        box-shadow: 0 4px 10px rgba(255, 64, 129, 0.3);
+    }
+
+    .risk-badge {
+        font-size: 1.2rem;
+        padding: 10px 16px;
+        border-radius: 12px;
+        color: white;
+        font-weight: 600;
+    }
+
+    .risk-low { background: #28a745; }
+    .risk-moderate { background: #ffc107; color: #000; }
+    .risk-high { background: #dc3545; }
+
+    .risk-bar {
+        height: 10px;
+        border-radius: 5px;
+        margin-top: 8px;
+        transition: width 0.8s ease-in-out;
+    }
+    .risk-bar.low { background: linear-gradient(90deg, #28a745, #a8e063); width: 40%; }
+    .risk-bar.moderate { background: linear-gradient(90deg, #ffc107, #ff9800); width: 70%; }
+    .risk-bar.high { background: linear-gradient(90deg, #dc3545, #ff6b6b); width: 95%; }
+
+    .text-muted { font-size: 0.9rem; }
+</style>
+
+<div class="container mt-5 mb-5">
+    <h1 class="text-center mb-3">Your Prediction Report 🩺</h1>
+    <p class="text-center text-light mb-4">
+        A detailed analysis of your heart disease prediction and key health indicators.
+    </p>
+
+    <!-- ✅ Prediction Summary -->
+    <div class="card shadow-sm p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="mb-0">Prediction Summary</h4>
+            <div>
+                <button class="btn btn-custom me-2" onclick="downloadPDF()">📄 Download PDF</button>
+                <button class="btn btn-custom" onclick="downloadCSV()">📊 Download CSV</button>
+            </div>
+        </div>
+
+        <p><strong>Result:</strong>
+            {% if risk_level == 'High' %}
+                <span class="text-danger">Heart Disease Detected</span>
+            {% elif risk_level == 'Moderate' %}
+                <span class="text-warning">Possible Heart Disease (Monitor Closely)</span>
+            {% else %}
+                <span class="text-success">No Heart Disease Detected</span>
+            {% endif %}
+        </p>
+
+        <p><strong>Confidence:</strong> {{ confidence }}%</p>
+        <p class="text-muted" style="font-size: 0.9rem;">
+            ⚠️ Confidence levels may vary depending on input data.  
+            Always consult a medical professional for genuine confirmation.
+        </p>
+
+        <p><strong>Risk Level:</strong>
+            {% if risk_level == 'High' %}
+                <span class="risk-badge risk-high">High</span>
+                <div class="risk-bar high"></div>
+            {% elif risk_level == 'Moderate' %}
+                <span class="risk-badge risk-moderate">Moderate</span>
+                <div class="risk-bar moderate"></div>
+            {% else %}
+                <span class="risk-badge risk-low">Low</span>
+                <div class="risk-bar low"></div>
+            {% endif %}
+        </p>
+
+        <!-- ✅ Triggered Risk Factors -->
+        <p><strong>Triggered Risk Factors ({{ triggered_count }}):</strong></p>
+        {% if triggered_count == 0 %}
+            <p class="text-success">None ✅</p>
+        {% else %}
+            <ul class="list-group">
+                {% for f in triggered_factors %}
+                    <li class="list-group-item">
+                        <strong>{{ loop.index }}.</strong> {{ f }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <!-- ✅ Charts Section -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow-sm p-3 mb-4">
+                <h5 class="text-center">Prediction Probabilities</h5>
+                <div id="probability_chart"></div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm p-3 mb-4">
+                <h5 class="text-center">Top 5 Responsible Features</h5>
+                <div id="feature_chart"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Doctor’s Suggestion -->
+    <div class="card shadow-sm p-4 mb-5">
+        <h4>Doctor’s Suggestion 🧑‍⚕️</h4>
+        {% if risk_level == 'High' %}
+            <p class="text-danger mb-0">
+                ⚠️ <strong>High risk detected.</strong><br>
+                Immediate consultation with a <strong>cardiologist</strong> is strongly advised.<br>
+                Consider an ECG, cholesterol test, and stress test soon.
+            </p>
+        {% elif risk_level == 'Moderate' %}
+            <p class="text-warning mb-0">
+                🩻 <strong>Moderate risk detected.</strong><br>
+                Please schedule a check-up to monitor your heart health.<br>
+                Focus on maintaining a healthy weight, balanced diet, and regular exercise.
+            </p>
+        {% else %}
+            <p class="text-success mb-0">
+                💚 <strong>Low risk detected.</strong><br>
+                Great job! Keep up your healthy lifestyle.<br>
+                Continue regular exercise and yearly health checkups.
+            </p>
+        {% endif %}
+
+        <p class="text-muted mt-3" style="font-size: 0.9rem;">
+            ⚖️ <em>Note:</em> This AI-based prediction is for informational purposes only.  
+            Please consult a certified doctor for a confirmed medical diagnosis.
+        </p>
+    </div>
+</div>
+
+<!-- ✅ Plotly Charts + PDF/CSV Downloads -->
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+    // ✅ Prediction Probability Chart with Hover Tooltips
+    var probData = [{
+        x: {{ prob_labels|tojson }},
+        y: {{ prob_values|tojson }},
+        type: 'bar',
+        text: {{ prob_values|tojson }},
+        textposition: 'auto',
+        hoverinfo: 'x+y',
+        hovertemplate: '%{x}: %{y:.1f}%<extra></extra>',
+        marker: { color: ['#28a745', '#dc3545'] }
+    }];
+
+    Plotly.newPlot('probability_chart', probData, { 
+        title: 'Prediction Probabilities',
+        margin: { t: 40 },
+        yaxis: { title: 'Confidence (%)', range: [0, 100] }
+    });
+
+    // ✅ Top 5 Responsible Features Chart with Hover Info
+    var featureData = [{
+        x: {{ top_features_labels|tojson }},
+        y: {{ top_features_values|tojson }},
+        type: 'bar',
+        text: {{ top_features_values|tojson }},
+        textposition: 'auto',
+        hoverinfo: 'x+y',
+        hovertemplate: '%{x}: %{y:.2f}<extra></extra>',
+        marker: { color: ['#FFD700', '#FFA500', '#FF6347', '#9370DB', '#4682B4'] }
+    }];
+
+    Plotly.newPlot('feature_chart', featureData, { 
+        title: 'Top 5 Responsible Features',
+        margin: { t: 40 },
+        yaxis: { title: 'Feature Value (scaled)' },
+        xaxis: { title: 'Feature' }
+    });
+
+    // ✅ PDF and CSV Download Functions
+    function downloadPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const now = new Date().toLocaleString('en-US');
+        doc.text("Heart Disease Prediction Report", 10, 10);
+        doc.text("Result: {{ risk_level }}", 10, 20);
+        doc.text("Confidence: {{ confidence }}%", 10, 30);
+        doc.text("Generated on: " + now, 10, 40);
+        doc.save("Heart_Report.pdf");
+    }
+
+    function downloadCSV() {
+        let csv = "Feature,Impact,Description\n";
+        {% for feature, value, desc in feature_insights %}
+            csv += `"{{ feature }}",{{ value }},"{{ desc }}"\n`;
+        {% endfor %}
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'Heart_Report.csv';
+        link.click();
+    }
+</script>
+{% endblock %}

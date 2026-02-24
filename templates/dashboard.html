@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background: linear-gradient(135deg, #f8cdda 0%, #1d2b64 100%);
+        font-family: 'Poppins', sans-serif;
+        color: #222;
+    }
+
+    h1, h2, h5 {
+        font-family: 'Dancing Script', cursive;
+        color: #b71c1c;
+        font-weight: bold;
+    }
+
+    .card {
+        border: none;
+        border-radius: 15px;
+        background-color: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .text-muted {
+        color: #555 !important;
+    }
+
+    hr {
+        border-top: 2px solid #f8bbd0;
+    }
+</style>
+
+<div class="container mt-5 mb-5">
+    <h1 class="text-center mb-4">Patient Data Dashboard</h1>
+    <p class="text-center text-muted">A beautiful overview of patient data and model insights related to heart disease prediction.</p>
+    <hr class="my-4">
+
+    <div class="row">
+        <div class="col-12 text-center mb-4">
+            <h2>Data Distributions📊</h2>
+            <p class="text-muted">Explore how heart disease prevalence changes across different variables.</p>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Heart Disease Distribution</h5>
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Heart Disease Count by Age Group</h5>
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr class="my-4">
+
+    <div class="row">
+        <div class="col-12 text-center mb-4">
+            <h2>Model Insights🧠</h2>
+            <p class="text-muted">Discover which features play the biggest roles in model predictions.</p>
+        </div>
+        <div class="col-12 mb-4">
+            <div class="card h-100 shadow">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Model Feature Importances</h5>
+                    <canvas id="featImpChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr class="my-4">
+
+    <div class="row">
+        <div class="col-12 text-center mb-4">
+            <h2> Feature Explanations</h2>
+            <p class="text-muted">Understand what each medical feature means in your model.</p>
+        </div>
+
+        {% set feature_cards = [
+            ('Age & Sex', 'Age is a significant risk factor for heart disease. The model also considers biological differences represented by the patient\'s sex.'),
+            ('Chest Pain Type (cp)', 'This feature categorizes the type of chest pain experienced by the patient, a critical symptom for diagnosis.'),
+            ('Blood Pressure & Cholesterol', 'The model uses resting blood pressure (trestbps) and serum cholesterol (chol) levels, both key indicators of heart health.'),
+            ('Exercise & Heart Rate', 'It analyzes the maximum heart rate achieved (thalach) and whether exercise-induced angina (exang) was present.'),
+            ('ECG & ST Depression', 'Resting electrocardiographic results (restecg) and ST depression induced by exercise (oldpeak) assess heart function.'),
+            ('Vessel & Thallium Scans', 'The number of major vessels (ca) and thallium stress test (thal) results are key diagnostic features.')
+        ] %}
+
+        {% for title, desc in feature_cards %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">{{ title }}</h5>
+                    <p class="card-text">{{ desc }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Pie Chart
+    const pieCtx = document.getElementById('pieChart').getContext('2d');
+    new Chart(pieCtx, {
+        type: 'pie',
+        data: {
+            labels: {{ pie_labels | tojson }},
+            datasets: [{
+                label: 'Total Patients',
+                data: {{ pie_values | tojson }},
+                backgroundColor: ['#42a5f5', '#ef5350'],
+                hoverOffset: 4
+            }]
+        },
+        options: { responsive: true }
+    });
+
+    // Bar Chart for Age Groups
+    const barCtx = document.getElementById('barChart').getContext('2d');
+    new Chart(barCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ bar_labels | tojson }},
+            datasets: [{
+                label: 'Patients with Heart Disease',
+                data: {{ bar_data | tojson }},
+                backgroundColor: ['#66bb6a', '#ffb74d', '#26c6da', '#ab47bc', '#78909c']
+            }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+    });
+
+    // Feature Importances
+    const featImpCtx = document.getElementById('featImpChart').getContext('2d');
+    new Chart(featImpCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ feat_imp_labels | tojson }},
+            datasets: [{
+                label: 'Importance',
+                data: {{ feat_imp_data | tojson }},
+                backgroundColor: '#5c6bc0'
+            }]
+        },
+        options: {
+            responsive: true,
+            indexAxis: 'y',
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+</script>
+{% endblock %}

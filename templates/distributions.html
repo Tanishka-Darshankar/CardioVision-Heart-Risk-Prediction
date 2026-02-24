@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Feature Distributions{% endblock %}
+
+{% block content %}
+<style>
+  body {
+    background: linear-gradient(135deg, #f8cdda 0%, #1d2b64 100%);
+    font-family: 'Poppins', sans-serif;
+    color: #91eb14ff;
+  }
+
+  h1 {
+    font-family: 'Dancing Script', cursive;
+    color: #b71c1c;
+    font-weight: bold;
+  }
+
+  p {
+    color: #c42c2cff;
+  }
+
+  .card {
+    border: none;
+    border-radius: 15px;
+    background-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 12px rgba(18, 18, 230, 0.96);
+  }
+
+  .text-muted {
+    color: #320bb5ff !important;
+  }
+
+  hr {
+    border-top: 2px solid #f8bbd0;
+  }
+</style>
+
+<div class="container mt-5 mb-5">
+  <h1 class="text-center mb-4">Feature Distributions📈</h1>
+  <p class="text-center mb-5 text-muted">
+    Compare how key features vary for patients with and without heart disease.
+  </p>
+
+  {% if histogram_htmls %}
+    <div class="row">
+      {% for plot_html in histogram_htmls %}
+        <div class="col-md-6 mb-4">
+          <div class="card shadow-lg p-4">
+            {{ plot_html | safe }}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% elif plot_url %}
+    <div class="text-center">
+      <img
+        src="{{ plot_url }}"
+        alt="Feature Distribution Chart"
+        style="max-width: 85%; border-radius: 15px; box-shadow: 0 3px 15px rgba(0,0,0,0.25);"
+      >
+    </div>
+  {% else %}
+    <p class="text-center text-muted">No data available to display yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

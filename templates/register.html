@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register | Heart Health Portal</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;500;600&display=swap');
+
+      /* General body style */
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #f8cdda 0%, #1d2b64 100%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      /* Main container */
+      .register-container {
+        background: #fff;
+        padding: 40px 50px;
+        border-radius: 25px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        width: 380px;
+        text-align: center;
+        transition: 0.3s ease;
+      }
+
+      .register-container:hover {
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+      }
+
+      /* Header title */
+      .register-container h2 {
+        font-family: 'Pacifico', cursive;
+        color: #e91e63;
+        font-size: 30px;
+        margin-bottom: 25px;
+      }
+
+      .register-container h2 span {
+        color: #3b3bff;
+      }
+
+      /* Form style */
+      form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+      }
+
+      .form-group {
+        position: relative;
+        margin-bottom: 20px;
+        width: 100%;
+      }
+
+      /* Input field styling */
+      .form-group input {
+        width: 100%;
+        padding: 12px 45px;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+        outline: none;
+        font-size: 15px;
+        transition: 0.3s;
+        box-sizing: border-box;
+      }
+
+      .form-group input:focus {
+        border-color: #e91e63;
+        box-shadow: 0 0 8px rgba(233, 30, 99, 0.3);
+      }
+
+      /* Left-side icons inside input boxes */
+      .form-group .fa-user,
+      .form-group .fa-phone,
+      .form-group .fa-lock {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #e91e63;
+        font-size: 16px;
+      }
+
+      /* Eye icon on the far right side */
+      .toggle-password {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        font-size: 18px;
+        color: #e91e63;
+        transition: color 0.3s;
+      }
+
+      .toggle-password:hover {
+        color: #ff5f96;
+      }
+
+      /* Register button */
+      .register-btn {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        background: linear-gradient(to right, #ff5f96, #ff9966);
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease-in-out;
+      }
+
+      .register-btn:hover {
+        background: linear-gradient(to right, #ff4081, #ff7e5f);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(233, 30, 99, 0.3);
+      }
+
+      /* Footer text */
+      p {
+        margin-top: 15px;
+        color: #e91e63;
+        font-size: 14px;
+      }
+
+      p a {
+        color: #e91e63;
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      p a:hover {
+        text-decoration: underline;
+      }
+
+      /* Responsive design */
+      @media (max-width: 420px) {
+        .register-container {
+          width: 90%;
+          padding: 30px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="register-container">
+      <h2>Register Here <span>⚕️</span></h2>
+      <form action="/register" method="POST">
+        <!-- Username Field -->
+        <div class="form-group">
+          <i class="fa-solid fa-user"></i>
+          <input
+            type="text"
+            name="username"
+            placeholder="Enter username"
+            required
+          />
+        </div>
+
+        <!-- Mobile Number Field -->
+        <div class="form-group">
+          <i class="fa-solid fa-phone"></i>
+          <input
+            type="text"
+            id="mobile"
+            name="mobile"
+            placeholder="Enter your mobile number"
+            required
+          />
+        </div>
+
+        <!-- Password Field with Right-Aligned Eye Toggle -->
+        <div class="form-group">
+          <i class="fa-solid fa-lock"></i>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Enter password"
+            required
+          />
+          <i class="fa-solid fa-eye toggle-password" id="togglePassword"></i>
+        </div>
+
+        <!-- Register Button -->
+        <button type="submit" class="register-btn">Register</button>
+      </form>
+
+      <p>Already have an account? <a href="/login">Login</a></p>
+    </div>
+
+    <!-- Password Toggle Script -->
+    <script>
+      const togglePassword = document.getElementById("togglePassword");
+      const password = document.getElementById("password");
+
+      togglePassword.addEventListener("click", function () {
+        const type =
+          password.getAttribute("type") === "password" ? "text" : "password";
+        password.setAttribute("type", type);
+
+        this.classList.toggle("fa-eye");
+        this.classList.toggle("fa-eye-slash");
+      });
+    </script>
+  </body>
+</html>
