@@ -7,3 +7,6 @@ pandas
 scikit-learn
 plotly
 gunicorn
+fpdf
+matplotlib
+seaborn
