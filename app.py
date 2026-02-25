@@ -476,7 +476,7 @@ from flask import send_file  # ✅ make sure this import is at the top of app.py
 from fpdf import FPDF
 import os
 import tempfile
-from fpdf import FPDF, XPos, YPos
+from fpdf import FPDF
 
 @app.route("/download_pdf")
 def download_pdf():
@@ -664,3 +664,4 @@ def distributions():
 # ==========================
 if __name__ == "__main__":   
     app.run(debug=True)
+
