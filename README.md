@@ -1,4 +1,4 @@
-# ❤️ CardioVision – Heart Health Risk Prediction
+# ❤️CardioVision – Healthcare Analytics System
 
 CardioVision is a Machine Learning-based web application that predicts the risk of heart disease using patient health parameters.
 It provides interactive visualizations and insights to help understand key factors influencing predictions.
